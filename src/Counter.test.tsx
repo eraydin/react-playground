@@ -3,7 +3,10 @@ import { fireEvent, render } from "@testing-library/react";
 import Counter from "./Counter";
 
 test("should render a label and counter", () => {
-  const { getByLabelText, getByRole } = render(<Counter />);
+  const handler = jest.fn();
+  const { getByLabelText, getByRole } = render(
+    <Counter count={0} onCounterIncrease={handler} />
+  );
   const label = getByLabelText("Count");
   expect(label).toBeInTheDocument();
 
@@ -12,7 +15,10 @@ test("should render a label and counter", () => {
 });
 
 test("should render a counter with custom label", () => {
-  const { getByLabelText, getByRole } = render(<Counter label={"Current"} />);
+  const handler = jest.fn();
+  const { getByLabelText, getByRole } = render(
+    <Counter label={"Current"} count={0} onCounterIncrease={handler} />
+  );
   const label = getByLabelText("Current");
   expect(label).toBeInTheDocument();
 
@@ -20,31 +26,12 @@ test("should render a counter with custom label", () => {
   expect(counter).toBeInTheDocument();
 });
 
-test("should start at zero", () => {
-  const { getByRole } = render(<Counter />);
+test("should call the incrementer", () => {
+  const handler = jest.fn();
+  const { getByRole } = render(
+    <Counter count={0} onCounterIncrease={handler} />
+  );
   const counter = getByRole("counter");
-  expect(counter).toHaveTextContent("0");
-});
-
-test("should start at another value", () => {
-  const { getByRole } = render(<Counter start={10} />);
-  const counter = getByRole("counter");
-  expect(counter).toHaveTextContent("10");
-});
-
-test("should increment the count by one", () => {
-  const { getByRole } = render(<Counter />);
-  const counter = getByRole("counter");
-  expect(counter).toHaveTextContent("0");
   fireEvent.click(counter);
-  fireEvent.click(counter);
-  expect(counter).toHaveTextContent("2");
-});
-
-test("should increment the count by ten", () => {
-  const { getByRole } = render(<Counter />);
-  const counter = getByRole("counter");
-  expect(counter).toHaveTextContent("0");
-  fireEvent.click(counter, { shiftKey: true });
-  expect(counter).toHaveTextContent("10");
+  expect(handler).toBeCalledWith(false);
 });
